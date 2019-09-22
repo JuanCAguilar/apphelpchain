@@ -155,4 +155,4 @@ class FabCar extends Contract {
 
 }
 
-module.exports = FabCar;
+module.exports = HelpChain;
