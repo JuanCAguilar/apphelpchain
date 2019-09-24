@@ -1,5 +1,5 @@
 {
-    "name": "helpchain",
+    "name": "helpchain_Chaincode",
     "version": "1.0.0",
     "description": "Contrato helpchain implementado en JavaScript",
     "main": "index.js",

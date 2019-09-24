@@ -87,6 +87,7 @@ let Chaincode = class {
     let eslabonGenesis = {};
     eslabonGenesis.estadoCad = 'INACTIVO';
     eslabonGenesis.montoMeta = montoMeta;
+    eslabonGenesis.numDonativos = 0;
     let donativos = {};
     eslabonGenesis.donativos = donativos;
     cadena.eslabonGenesis = eslabonGenesis;
@@ -359,6 +360,68 @@ let Chaincode = class {
 
     console.info('================Activacion de proyecto exitosa=================');
   }
+
+
+  async crearDonativo(stub, args, thisClass) {
+    //   0       1          2
+    //  nomP   nomD    Cantidad
+    if (args.length < 3) {
+      throw new Error('Numero incorrecto de argumentos. Se esperaba nombre del proyecto, nombre del donador y cantidad a donar')
+    }
+
+    let nomP = args[0];
+    let nomD = args[1];
+    let cantidad = parseInt(args[2]);
+    if (typeof cantidad !== 'number') {
+      throw new Error('3th argument must be a numeric string');
+    }
+
+
+    console.info('================Comienza la creacion del donativo =================');
+
+    let proyectAsBytes = await stub.getState(nomP);
+    if (!proyectAsBytes || !proyectAsBytes.toString()) {
+      throw new Error('Proyect does not exist');
+    }
+    let proyectToDonate = {};
+    try {
+      proyectToDonate = JSON.parse(proyectAsBytes.toString()); //unmarshal
+    } catch (err) {
+      let jsonResp = {};
+      jsonResp.error = 'Failed to decode JSON of: ' + nomP;
+      throw new Error(jsonResp);
+    }
+    console.info(proyectToDonate);
+
+    let numDonativos = proyectToDonate.cadena.eslabonGenesis.numDonativos + 1;
+    proyectToDonate.cadena.eslabonGenesis.numDonativos = numDonativos;
+    proyectToDonate.cadena.eslabonGenesis.eslabones.eslabon1.recaudacion = proyectToDonate.cadena.eslabonGenesis.eslabones.eslabon1.recaudacion + cantidad
+    let donativosAux = {};
+    donativosAux = proyectToDonate.cadena.eslabonGenesis.donativos;
+
+    let don = 'don'+numDonativos.toString();
+    donativosAux[don] = {
+      dID: 'd'+numDonativos.toString()+nomD,
+      nomD: nomD,
+      cantidad: cantidad,
+      estado: 'ASIGNADO'
+    }
+
+    proyectToDonate.cadena.eslabonGenesis.donativos = donativosAux;
+
+
+
+    let proyectJSONasBytes = Buffer.from(JSON.stringify(proyectToDonate));
+    await stub.putState(nomP, proyectJSONasBytes);
+
+    console.info('================Activacion de proyecto exitosa=================');
+  }
+
+
+
+
+/////////////////////////////////// SECCION DE QUERIES //////////////////////////////////////
+
 
   async getProyectsPorRango(stub, args, thisClass) {
 
