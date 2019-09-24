@@ -28,7 +28,7 @@ services:
     command: /bin/bash
     volumes:
         - /var/run/:/host/var/run/
-        - ./../../../../organization/digibank:/opt/gopath/src/github.com/
-        - ./../../../../../redhelpchain/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
+        - ./../../SoporteHC:/opt/gopath/src/github.com/
+        - ./../../../../redhelpchain/crypto-config:/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/
     networks:
         - helpchain
