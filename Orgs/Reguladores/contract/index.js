@@ -4,7 +4,7 @@
 
 'use strict';
 
-const HelpChain = require('./helpchain');
+const HelpChain = require('./helpchain_Chaincode');
 
 module.exports.HelpChain = HelpChain;
 module.exports.contracts = [ HelpChain ];

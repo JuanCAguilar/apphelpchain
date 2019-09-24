@@ -1,14 +1,17 @@
 {
     "name": "helpchain",
-    "version": "0.0.3",
-    "description": "Contrato HelpChain",
+    "version": "1.0.0",
+    "description": "Contrato helpchain implementado en JavaScript",
     "main": "index.js",
     "engines": {
         "node": ">=8",
         "npm": ">=5"
     },
+    "scripts": {
+        "start": "fabric-chaincode-node start"
+    },
     "engineStrict": true,
-    "author": "hyperledger & JuanCAgui",
+    "author": "Hyperledger & JuanCAguilar",
     "license": "Apache-2.0",
     "dependencies": {
         "fabric-contract-api": "~1.4.0",
