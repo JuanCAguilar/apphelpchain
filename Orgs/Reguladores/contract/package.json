@@ -7,7 +7,7 @@
         "npm": ">=5"
     },
     "scripts": {
-        "start": "fabric-chaincode-node start"
+        "start" : "node helpchain.js"
     },
     "engineStrict": true,
     "author": "Hyperledger & JuanCAguilar",

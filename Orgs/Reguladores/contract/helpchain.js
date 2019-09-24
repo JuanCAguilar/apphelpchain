@@ -32,6 +32,7 @@ let Chaincode = class {
     }
   }
 
+
   // ===============================================
   // crearProyecto
   // ===============================================
@@ -200,13 +201,20 @@ let Chaincode = class {
       throw new Error(jsonResp);
     }
     console.info(proyectToValid);
-    proyectToValid.estadoP = 'VALIDA'';
+    proyectToValid.estadoP = 'VALIDA';
 
     let proyectJSONasBytes = Buffer.from(JSON.stringify(proyectToValid));
     await stub.putState(nomP, proyectJSONasBytes); //rewrite the marble
 
     console.info('========Validacion Exitosa===========');
   }
+
+
+
+
+
+
+
 
   // =======================================================================================
   // Activa un proyecto poniendo el estadoP = Activo, estadoCad = VERDE y parametros de Meta
