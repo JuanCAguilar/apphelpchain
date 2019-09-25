@@ -20,7 +20,7 @@ let Chaincode = class {
 
     let method = this[ret.fcn];
     if (!method) {
-      console.log('no function of name:' + ret.fcn + ' found');
+      console.log('No existe funcion con el nombre:' + ret.fcn);
       throw new Error('Received unknown function ' + ret.fcn + ' invocation');
     }
     try {
@@ -37,8 +37,8 @@ let Chaincode = class {
   // crearProyecto
   // ===============================================
   async crearProyecto(stub, args, thisClass) {
-    if (args.length != 7) {
-      throw new Error('Incorrect number of arguments. Expecting 7');
+    if (args.length != 5) {
+      throw new Error('Esperando nomP, tipoSol, nomSol, causa, montoMeta');
     }
     // ==== Input sanitation ====
     console.info('######## Inicializando proyecto ########');
@@ -55,7 +55,7 @@ let Chaincode = class {
       throw new Error('4th argument must be a non-empty string');
     }
     if (args[4].length <= 0) {
-      throw new Error('5th argument must be a non-empty string');
+      throw new Error('5th argument must be a non-empty numeric string');
     }
 
 
@@ -73,7 +73,7 @@ let Chaincode = class {
     // ==== Check if proyect already exists ====
     let proyState = await stub.getState(nomP);
     if (proyState.toString()) {
-      throw new Error('This proyect already exists: ' + pID + ' ' +  nomP);
+      throw new Error('Este proyecto ya existe: ' + nomP + ' de: ' +  nomSol);
     }
 
     // ==== Create proyect object and marshal to JSON ====
@@ -112,7 +112,7 @@ let Chaincode = class {
   // ===============================================
   // readProyect - read a proyect from chaincode state
   // ===============================================
-  async readProyect(stub, args, thisClass) {
+  async buscarProyecto(stub, args, thisClass) {
     if (args.length != 1) {
       throw new Error('Numero de argumentos incorrecto. Escribe el nombre del proyecto para realizar el query');
     }
@@ -136,7 +136,7 @@ let Chaincode = class {
   // ==================================================
   // delete - remove a proyect key/value pair from state
   // ==================================================
-  async deleteProyect(stub, args, thisClass) {
+  async eliminarProyecto(stub, args, thisClass) {
     if (args.length != 1) {
       throw new Error('Numero de argumentos incorrecto. Escribe el nombre del proyecto para eliminar');
     }
@@ -157,7 +157,7 @@ let Chaincode = class {
       proyectJSON = JSON.parse(valAsbytes.toString());
     } catch (err) {
       jsonResp = {};
-      jsonResp.error = 'Failed to decode JSON of: ' + marbleName;
+      jsonResp.error = 'Failed to decode JSON of: ' + name;
       throw new Error(jsonResp);
     }
 
@@ -190,7 +190,7 @@ let Chaincode = class {
 
     let proyectAsBytes = await stub.getState(nomP);
     if (!proyectAsBytes || !proyectAsBytes.toString()) {
-      throw new Error('Proyect does not exist');
+      throw new Error('El proyecto no existe: ');
     }
     let proyectToValid = {};
     try {
@@ -253,7 +253,7 @@ let Chaincode = class {
 
     let proyectAsBytes = await stub.getState(nomP);
     if (!proyectAsBytes || !proyectAsBytes.toString()) {
-      throw new Error('Proyect does not exist');
+      throw new Error('El proyecto no existe: ');
     }
     let proyectToActivate = {};
     try {
@@ -389,7 +389,7 @@ let Chaincode = class {
 
     let proyectAsBytes = await stub.getState(nomP);
     if (!proyectAsBytes || !proyectAsBytes.toString()) {
-      throw new Error('Proyect does not exist');
+      throw new Error('El proyecto no existe');
     }
     let proyectToDonate = {};
     try {
@@ -422,7 +422,7 @@ let Chaincode = class {
     let proyectJSONasBytes = Buffer.from(JSON.stringify(proyectToDonate));
     await stub.putState(nomP, proyectJSONasBytes);
 
-    console.info('================Activacion de proyecto exitosa=================');
+    console.info('================Donativo realizado exitosamente=================');
   }
 
 
@@ -434,7 +434,7 @@ let Chaincode = class {
   async getProyectsPorRango(stub, args, thisClass) {
 
     if (args.length < 2) {
-      throw new Error('Incorrect number of arguments. Expecting 2');
+      throw new Error('Startkey, endKey');
     }
 
     let startKey = args[0];
@@ -458,7 +458,7 @@ let Chaincode = class {
     let causa = args[0].toLowerCase();
     let queryString = {};
     queryString.selector = {};
-    queryString.selector.docType = 'marble';
+    queryString.selector.docType = 'proyecto';
     queryString.selector.causa = causa;
     let method = thisClass['getQueryResultForQueryString'];
     let queryResults = await method(stub, JSON.stringify(queryString), thisClass);
@@ -475,7 +475,7 @@ let Chaincode = class {
     let tipoSol = args[0].toLowerCase();
     let queryString = {};
     queryString.selector = {};
-    queryString.selector.docType = 'marble';
+    queryString.selector.docType = 'proyecto';
     queryString.selector.tipoSol = tipoSol;
     let method = thisClass['getQueryResultForQueryString'];
     let queryResults = await method(stub, JSON.stringify(queryString), thisClass);
@@ -514,7 +514,7 @@ let Chaincode = class {
     let estadoP = args[0].toLowerCase();
     let queryString = {};
     queryString.selector = {};
-    queryString.selector.docType = 'marble';
+    queryString.selector.docType = 'proyecto';
     queryString.selector.estadoP = estadoP;
     let method = thisClass['getQueryResultForQueryString'];
     let queryResults = await method(stub, JSON.stringify(queryString), thisClass);
@@ -531,7 +531,7 @@ let Chaincode = class {
     let estadoCad = args[0].toLowerCase();
     let queryString = {};
     queryString.selector = {};
-    queryString.selector.docType = 'marble';
+    queryString.selector.docType = 'proyecto';
     queryString.selector.cadena.eslabonGenesis.estadoCad = estadoCad;
     let method = thisClass['getQueryResultForQueryString'];
     let queryResults = await method(stub, JSON.stringify(queryString), thisClass);
@@ -570,7 +570,7 @@ let Chaincode = class {
           allResults.push(jsonRes);
         }
         if (res.done) {
-          console.log('end of data');
+          console.log('fin de los datos');
           await iterator.close();
           console.info(allResults);
           return allResults;
@@ -600,7 +600,7 @@ let Chaincode = class {
         throw new Error('Numero incorrecto de argumentos. Esperando nombre de proyecto')
       }
       let nomP = args[0];
-      console.info('- start getHistoryForMarble: %s\n', nomP);
+      console.info('================ start getHistoryPorProyecto: %s\n', nomP);
 
       let resultsIterator = await stub.getHistoryForKey(nomP);
       let method = thisClass['getAllResults'];

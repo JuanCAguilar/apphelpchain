@@ -1,56 +1,80 @@
+'use strict';
 /*
- * SPDX-License-Identifier: Apache-2.0
+* Copyright IBM Corp All Rights Reserved
+*
+* SPDX-License-Identifier: Apache-2.0
+*/
+/*
+ * Register and Enroll a user
  */
 
-'use strict';
+var Fabric_Client = require('fabric-client');
+var Fabric_CA_Client = require('fabric-ca-client');
 
-const { FileSystemWallet, Gateway, X509WalletMixin } = require('fabric-network');
-const path = require('path');
+var fs = require('fs');
+var path = require('path');
 
-const ccpPath = path.resolve(__dirname, '..', '..', 'first-network', 'connection-org1.json');
+var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
+var org1tlscacert_path = path.resolve(firstnetwork_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
+var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
 
-async function main() {
-    try {
+//
+var fabric_client = new Fabric_Client();
+var fabric_ca_client = null;
+var admin_user = null;
+var member_user = null;
+var wallet_path = path.join(__dirname, 'hfc-key-store');
+console.log(' Wallet path:'+wallet_path);
 
-        // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
 
-        // Check to see if we've already enrolled the user.
-        const userExists = await wallet.exists('user1');
-        if (userExists) {
-            console.log('An identity for the user "user1" already exists in the wallet');
-            return;
-        }
+Fabric_Client.newDefaultKeyValueStore({ path: wallet_path
+}).then((state_store) => {
+    fabric_client.setStateStore(state_store);
+    var crypto_suite = Fabric_Client.newCryptoSuite();
+    var crypto_store = Fabric_Client.newCryptoKeyStore({path: wallet_path});
+    crypto_suite.setCryptoKeyStore(crypto_store);
+    fabric_client.setCryptoSuite(crypto_suite);
+    var	tlsOptions = {
+    	trustedRoots: [org1tlscacert],
+    	verify: false
+    };
+    // be sure to change the http to https when the CA is running TLS enabled
+    fabric_ca_client = new Fabric_CA_Client('https://localhost:7054', tlsOptions , 'ca-org1', crypto_suite);             //Aqui tengo que cambiar dependiendo de la organizacion
 
-        // Check to see if we've already enrolled the admin user.
-        const adminExists = await wallet.exists('admin');
-        if (!adminExists) {
-            console.log('An identity for the admin user "admin" does not exist in the wallet');
-            console.log('Run the enrollAdmin.js application before retrying');
-            return;
-        }
 
-        // Create a new gateway for connecting to our peer node.
-        const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet, identity: 'admin', discovery: { enabled: true, asLocalhost: true } });
-
-        // Get the CA client object from the gateway for interacting with the CA.
-        const ca = gateway.getClient().getCertificateAuthority();
-        const adminIdentity = gateway.getCurrentIdentity();
-
-        // Register the user, enroll the user, and import the new identity into the wallet.
-        const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: 'user1', role: 'client' }, adminIdentity);
-        const enrollment = await ca.enroll({ enrollmentID: 'user1', enrollmentSecret: secret });
-        const userIdentity = X509WalletMixin.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
-        await wallet.import('user1', userIdentity);
-        console.log('Successfully registered and enrolled admin user "user1" and imported it into the wallet');
-
-    } catch (error) {
-        console.error(`Failed to register user "user1": ${error}`);
-        process.exit(1);
+    return fabric_client.getUserContext('admin', true);
+}).then((user_from_store) => {
+    if (user_from_store && user_from_store.isEnrolled()) {
+        console.log('Los datos del administrador han sido cargados correctamente');
+        admin_user = user_from_store;
+    } else {
+        throw new Error('Error al conseguir el administrador.... ejecuta  node inscribirAdministrador.js');
     }
-}
 
-main();
+
+    return fabric_ca_client.register({enrollmentID: 'user1', affiliation: 'org1.department1',role: 'client'}, admin_user); //Aqui tengo que cambiar dependiendo de la organizacion
+}).then((secret) => {
+    console.log('El usuario1 ha sido registrado - secret:'+ secret);
+
+    return fabric_ca_client.enroll({enrollmentID: 'user1', enrollmentSecret: secret}); //Aqui tengo que cambiar dependiendo de la organizacion
+}).then((enrollment) => {
+  console.log('El nuevo usuario ha sido inscrito correctamente: "user1" ');
+  return fabric_client.createUser(
+     {username: 'user1',            //Aqui tengo que cambiar dependiendo de la organizacion
+     mspid: 'Org1MSP',
+     cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
+     });
+}).then((user) => {
+     member_user = user;
+
+     return fabric_client.setUserContext(member_user);
+}).then(()=>{
+     console.log('El usuario ha sido registrado e inscrito. Ya esta listo para interactuar con la red Helpchain.');
+
+}).catch((err) => {
+    console.error('Error al registrar: ' + err);
+	if(err.toString().indexOf('Authorization') > -1) {
+		console.error('Authorization failures may be caused by having admin credentials from a previous CA instance.\n' +
+		'Try again after deleting the contents of the store directory '+wallet_path);
+	}
+});

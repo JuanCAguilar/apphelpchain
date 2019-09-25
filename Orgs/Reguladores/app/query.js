@@ -1,50 +1,71 @@
+'use strict';
 /*
- * SPDX-License-Identifier: Apache-2.0
+* Copyright IBM Corp All Rights Reserved
+*
+* SPDX-License-Identifier: Apache-2.0
+*/
+/*
+ * Chaincode query
  */
 
-'use strict';
+var Fabric_Client = require('fabric-client');
+var fs = require('fs');
+var path = require('path');
 
-const { FileSystemWallet, Gateway } = require('fabric-network');
-const path = require('path');
+var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
+var org1tlscacert_path = path.resolve(firstnetwork_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
+var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
 
-const ccpPath = path.resolve(__dirname, '..', '..', 'first-network', 'connection-org1.json');
+//
+var fabric_client = new Fabric_Client();
 
-async function main() {
-    try {
 
-        // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
-        const wallet = new FileSystemWallet(walletPath);
-        console.log(`Wallet path: ${walletPath}`);
+var channel = fabric_client.newChannel('channelhelpchain');
+var peer = fabric_client.newPeer('grpcs://localhost:7051', {
+	'ssl-target-name-override': 'peer0.org1.example.com',		 //Aqui tengo que cambiar dependiendo de la organizacion
+	pem: org1tlscacert
+});
+channel.addPeer(peer);
+var store_path = path.join(__dirname, 'hfc-key-store');
+console.log('Store path:'+store_path);
 
-        // Check to see if we've already enrolled the user.
-        const userExists = await wallet.exists('user1');
-        if (!userExists) {
-            console.log('An identity for the user "user1" does not exist in the wallet');
-            console.log('Run the registerUser.js application before retrying');
-            return;
-        }
 
-        // Create a new gateway for connecting to our peer node.
-        const gateway = new Gateway();
-        await gateway.connect(ccpPath, { wallet, identity: 'user1', discovery: { enabled: true, asLocalhost: true } });
+Fabric_Client.newDefaultKeyValueStore({ path: store_path
+}).then((state_store) => {
+	fabric_client.setStateStore(state_store);
+	var crypto_suite = Fabric_Client.newCryptoSuite();
+	var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
+	crypto_suite.setCryptoKeyStore(crypto_store);
+	fabric_client.setCryptoSuite(crypto_suite);
 
-        // Get the network (channel) our contract is deployed to.
-        const network = await gateway.getNetwork('mychannel');
+	return fabric_client.getUserContext('user1', true);
+}).then((user_from_store) => {
+	if (user_from_store && user_from_store.isEnrolled()) {
+		console.log('Los datos del usuario han sido cargados correctamente');
+	} else {
+		throw new Error('run..	node registrarUsuario.js');
+	}
 
-        // Get the contract from the network.
-        const contract = network.getContract('fabcar');
 
-        // Evaluate the specified transaction.
-        // queryCar transaction - requires 1 argument, ex: ('queryCar', 'CAR4')
-        // queryAllCars transaction - requires no arguments, ex: ('queryAllCars')
-        const result = await contract.evaluateTransaction('queryAllCars');
-        console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
+	const request = {
+		chaincodeId: 'fabcar',
+		fcn: 'queryAllCars',				//PARTE IMPORTANTE
+		args: ['']
+	};
 
-    } catch (error) {
-        console.error(`Failed to evaluate transaction: ${error}`);
-        process.exit(1);
-    }
-}
-
-main();
+	// send the query proposal to the peer
+	return channel.queryByChaincode(request);
+}).then((query_responses) => {
+	console.log("El Query ha sido realizado. Viendo resultados");
+	if (query_responses && query_responses.length == 1) {
+		if (query_responses[0] instanceof Error) {
+			console.error("error en query = ", query_responses[0]);
+		} else {
+			console.log("La respuesta es:  ", query_responses[0].toString());
+		}
+	} else {
+		console.log("No ha devuelto nada el query");
+	}
+}).catch((err) => {
+	console.error('Error al realizar el query correctamente :: ' + err);
+});

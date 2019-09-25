@@ -2,6 +2,7 @@
     "name": "AppHelpChain",
     "version": "1.0.0",
     "description": "Aplicación de red HelpChain implementada en JavaScript",
+    "main": "helpchain.js",
     "engines": {
         "node": ">=8",
         "npm": ">=5"
