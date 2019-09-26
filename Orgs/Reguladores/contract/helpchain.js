@@ -496,7 +496,7 @@ let Chaincode = class {
 
 
     let method = thisClass['getAllResults'];
-    let results = await method(resultsIterator, false);
+    let results = await method(nomSolProyectsResultsIterator, false);
 
     return Buffer.from(JSON.stringify(results));
   }
@@ -508,7 +508,7 @@ let Chaincode = class {
       throw new Error('Numero incorrecto de argumentos. Se espera un estado de Proyecto.')
     }
 
-    let estadoP = args[0].toLowerCase();
+    let estadoP = args[0].toUpperCase();
     let queryString = {};
     queryString.selector = {};
     queryString.selector.docType = 'proyecto';
@@ -525,7 +525,7 @@ let Chaincode = class {
       throw new Error('Numero incorrecto de argumentos. Se espera un estado de Cadena.')
     }
 
-    let estadoCad = args[0].toLowerCase();
+    let estadoCad = args[0].toUpperCase();
     let queryString = {};
     queryString.selector = {};
     queryString.selector.docType = 'proyecto';

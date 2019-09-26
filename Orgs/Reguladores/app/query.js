@@ -47,10 +47,17 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	}
 
 
+//	buscarProyecto		nomP
+//	queryProyectsPorCausa		causa
+//	queryProyectsPorTipoSol 	tipoSol
+//	queryProyectsPorNomSol		nomSol		--FALLO
+//	queryProyectsPorEstadoP		estadoP
+//	queryProyectsPorEstadoCad 	estadoCad
+
 	const request = {
-		chaincodeId: 'fabcar',
-		fcn: 'queryAllCars',				//PARTE IMPORTANTE
-		args: ['']
+		chaincodeId: 'helpchain',
+		fcn: 'queryProyectsPorEstadoP',				//PARTE IMPORTANTE
+		args: ['EN_REVISION']
 	};
 
 	// send the query proposal to the peer
