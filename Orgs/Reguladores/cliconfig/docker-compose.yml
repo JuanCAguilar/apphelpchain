@@ -6,12 +6,12 @@
 version: '2'
 
 networks:
-  basic:
+  helpchain:
     external:
       name: net_helpchain
 
 services:
-  cliDigiBank:
+  cliReg:
     container_name: cliReg
     image: hyperledger/fabric-tools
     tty: true

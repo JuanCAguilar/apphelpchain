@@ -11,7 +11,7 @@ networks:
       name: net_helpchain
 
 services:
-  cliDigiBank:
+  cliSHC:
     container_name: cliSHC
     image: hyperledger/fabric-tools
     tty: true

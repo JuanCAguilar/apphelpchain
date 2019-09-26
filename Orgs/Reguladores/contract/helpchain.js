@@ -40,7 +40,7 @@ let Chaincode = class {
     if (args.length != 5) {
       throw new Error('Esperando nomP, tipoSol, nomSol, causa, montoMeta');
     }
-    // ==== Input sanitation ====
+
     console.info('######## Inicializando proyecto ########');
     if (args[0].length <= 0) {
       throw new Error('1st argument must be a non-empty string');
@@ -69,19 +69,17 @@ let Chaincode = class {
     }
 
 
-
-    // ==== Check if proyect already exists ====
     let proyState = await stub.getState(nomP);
     if (proyState.toString()) {
       throw new Error('Este proyecto ya existe: ' + nomP + ' de: ' +  nomSol);
     }
 
-    // ==== Create proyect object and marshal to JSON ====
-    let proyect = {};
-    proyect.docType = 'proyecto';
-    proyect.nomP = nomP;
-    proyect.nomSol = nomSol;
-    proyect.tipoSol = tipoSol;
+
+    let proyecto = {};
+    proyecto.docType = 'proyecto';
+    proyecto.nomP = nomP;
+    proyecto.nomSol = nomSol;
+    proyecto.tipoSol = tipoSol;
     proyecto.estadoP = 'EN_REVISION';
     proyecto.causa = causa;
     let cadena = {};
@@ -97,10 +95,9 @@ let Chaincode = class {
     proyecto.cadena = cadena;
 
 
-    // === Save proyect to state ===
-    await stub.putState(nomP, Buffer.from(JSON.stringify(proyect)));
+    await stub.putState(nomP, Buffer.from(JSON.stringify(proyecto)));
     let indexName = 'nomP~nomSol';
-    let nomPnomSolIndexKey = await stub.createCompositeKey(indexName, [proyect.nomP, proyect.nomSol]);
+    let nomPnomSolIndexKey = await stub.createCompositeKey(indexName, [proyecto.nomP, proyecto.nomSol]);
     console.info(nomPnomSolIndexKey);
     //  Save index entry to state. Only the key name is needed, no need to store a duplicate copy of the proyect
     //  Note - passing a 'nil' value will effectively delete the key from state, therefore we pass null character as value

@@ -14,7 +14,7 @@ const path = require('path');
 const util = require('util');
 
 var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
-var org1tlscacert_path = path.resolve(firstnetwork_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
+var org1tlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
 var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
 
 invoke();
@@ -66,7 +66,7 @@ async function invoke() {
 			targets: [peer], // notice the proposal_request has the peer defined in the 'targets' attribute
 			chaincodeId: 'helpchain',
 			fcn: 'crearProyecto',																																					//PARTE IMPORTANTE: FUNCION Y ARGUMENTOS POR DEFINIR
-			args: ['CAR12', 'Honda', 'Accord', 'Black', 'Tom'],
+			args: ['Proyecto1', 'Individuo', 'Juan_Carlos', 'EDUCACION', '100'],
 			chainId: 'channelhelpchain',
 			txId: tx_id
 		};
