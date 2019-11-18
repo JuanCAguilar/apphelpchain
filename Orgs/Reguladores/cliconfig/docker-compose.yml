@@ -20,9 +20,9 @@ services:
       - CORE_VM_ENDPOINT=unix:///host/var/run/docker.sock
       - FABRIC_LOGGING_SPEC=info
       - CORE_PEER_ID=cli
-      - CORE_PEER_ADDRESS=peer0.org1.example.com:7051
-      - CORE_PEER_LOCALMSPID=Org1MSP
-      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/org1.example.com/users/Admin@org1.example.com/msp
+      - CORE_PEER_ADDRESS=peer0.reg.com:7051
+      - CORE_PEER_LOCALMSPID=ReguladoresMSP
+      - CORE_PEER_MSPCONFIGPATH=/opt/gopath/src/github.com/hyperledger/fabric/peer/crypto/peerOrganizations/reg.com/users/Admin@reg.com/msp
       - CORE_CHAINCODE_KEEPALIVE=10
     working_dir: /opt/gopath/src/github.com/hyperledger/fabric/peer
     command: /bin/bash
@@ -34,5 +34,5 @@ services:
         - helpchain
     #depends_on:
     #  - orderer.example.com
-    #  - peer0.org1.example.com
+    #  - peer0.reg.com
     #  - couchdb

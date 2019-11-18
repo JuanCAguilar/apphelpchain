@@ -15,8 +15,8 @@ var fs = require('fs');
 var path = require('path');
 
 var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
-var org1tlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
-var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
+var regtlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'reg.com', 'tlsca', 'tlsca.reg.com-cert.pem');
+var regtlscacert = fs.readFileSync(regtlscacert_path, 'utf8');
 
 //
 var fabric_client = new Fabric_Client();
@@ -35,11 +35,11 @@ Fabric_Client.newDefaultKeyValueStore({ path: wallet_path
     crypto_suite.setCryptoKeyStore(crypto_store);
     fabric_client.setCryptoSuite(crypto_suite);
     var	tlsOptions = {
-    	trustedRoots: [org1tlscacert],
+    	trustedRoots: [regtlscacert],
     	verify: false
     };
     // be sure to change the http to https when the CA is running TLS enabled
-    fabric_ca_client = new Fabric_CA_Client('https://localhost:7054', tlsOptions , 'ca-org1', crypto_suite);             //Aqui tengo que cambiar dependiendo de la organizacion
+    fabric_ca_client = new Fabric_CA_Client('https://localhost:7054', tlsOptions , 'ca-reg', crypto_suite);             //Aqui tengo que cambiar dependiendo de la organizacion
 
 
     return fabric_client.getUserContext('admin', true);
@@ -54,14 +54,14 @@ Fabric_Client.newDefaultKeyValueStore({ path: wallet_path
 
     return fabric_ca_client.register({enrollmentID: 'user1', affiliation: 'org1.department1',role: 'client'}, admin_user); //Aqui tengo que cambiar dependiendo de la organizacion
 }).then((secret) => {
-    console.log('El usuario1 ha sido registrado - secret:'+ secret);
+    console.log('El usuario regulador ha sido registrado - secret:'+ secret);
 
     return fabric_ca_client.enroll({enrollmentID: 'user1', enrollmentSecret: secret}); //Aqui tengo que cambiar dependiendo de la organizacion
 }).then((enrollment) => {
-  console.log('El nuevo usuario ha sido inscrito correctamente: "user1" ');
+  console.log('El nuevo usuario regulador ha sido inscrito correctamente: "Regulador" ');
   return fabric_client.createUser(
      {username: 'user1',            //Aqui tengo que cambiar dependiendo de la organizacion
-     mspid: 'Org1MSP',
+     mspid: 'ReguladoresMSP',
      cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
      });
 }).then((user) => {

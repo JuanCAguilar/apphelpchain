@@ -12,8 +12,8 @@ var fs = require('fs');
 var path = require('path');
 
 var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
-var org1tlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
-var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
+var regtlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'reg.com', 'tlsca', 'tlsca.reg.com-cert.pem');
+var regtlscacert = fs.readFileSync(regtlscacert_path, 'utf8');
 
 //
 var fabric_client = new Fabric_Client();
@@ -32,11 +32,11 @@ Fabric_Client.newDefaultKeyValueStore({ path: wallet_path
     crypto_suite.setCryptoKeyStore(crypto_store);
     fabric_client.setCryptoSuite(crypto_suite);
     var	tlsOptions = {
-    	trustedRoots: [org1tlscacert],                                                                            //Aqui tengo que cambiar dependiendo de la organizacion
+    	trustedRoots: [regtlscacert],                                                                            //Aqui tengo que cambiar dependiendo de la organizacion
     	verify: false
     };
     // be sure to change the http to https when the CA is running TLS enabled
-    fabric_ca_client = new Fabric_CA_Client('https://localhost:7054', tlsOptions , 'ca-org1', crypto_suite);    //Aqui tengo que cambiar dependiendo de la organizacion
+    fabric_ca_client = new Fabric_CA_Client('https://localhost:7054', tlsOptions , 'ca-reg', crypto_suite);    //Aqui tengo que cambiar dependiendo de la organizacion
 
     return fabric_client.getUserContext('admin', true);
 }).then((user_from_store) => {
@@ -52,7 +52,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: wallet_path
           console.log('Se ha inscrito correctamente el usuario administrador "admin"');
           return fabric_client.createUser(
               {username: 'admin',
-                  mspid: 'Org1MSP',                                                                             //Aqui tengo que cambiar dependiendo de la organizacion
+                  mspid: 'ReguladoresMSP',                                                                             //Aqui tengo que cambiar dependiendo de la organizacion
                   cryptoContent: { privateKeyPEM: enrollment.key.toBytes(), signedCertPEM: enrollment.certificate }
               });
         }).then((user) => {

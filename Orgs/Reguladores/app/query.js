@@ -13,8 +13,8 @@ var fs = require('fs');
 var path = require('path');
 
 var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
-var org1tlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'org1.example.com', 'tlsca', 'tlsca.org1.example.com-cert.pem');
-var org1tlscacert = fs.readFileSync(org1tlscacert_path, 'utf8');
+var regtlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'reg.com', 'tlsca', 'tlsca.reg.com-cert.pem');
+var regtlscacert = fs.readFileSync(regtlscacert_path, 'utf8');
 
 //
 var fabric_client = new Fabric_Client();
@@ -22,8 +22,8 @@ var fabric_client = new Fabric_Client();
 
 var channel = fabric_client.newChannel('channelhelpchain');
 var peer = fabric_client.newPeer('grpcs://localhost:7051', {
-	'ssl-target-name-override': 'peer0.org1.example.com',		 //Aqui tengo que cambiar dependiendo de la organizacion
-	pem: org1tlscacert
+	'ssl-target-name-override': 'peer0.reg.com',		 //Aqui tengo que cambiar dependiendo de la organizacion
+	pem: regtlscacert
 });
 channel.addPeer(peer);
 var store_path = path.join(__dirname, 'hfc-key-store');

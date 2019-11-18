@@ -27,7 +27,7 @@ description: "La red Helpchain"
 version: "1.0"
 
 client:
-  organization: Org2
+  organization: SoporteHC
 
 #
 # [Optional]. But most apps would have this section so that channel objects can be constructed
@@ -38,7 +38,7 @@ channels:
   # name of the channel
   canalhelpchain:
     # Required. list of orderers designated by the application to use for transactions on this
-    # channel. This list can be a result of access control ("org1" can only access "ordererA"), or
+    # channel. This list can be a result of access control ("reg" can only access "ordererA"), or
     # operational decisions to share loads from applications among the orderers.  The values must
     # be "names" of orgs defined under "organizations/peers"
     orderers:
@@ -46,7 +46,7 @@ channels:
 
     # Required. list of peers from participating orgs
     peers:
-      peer0.org1.example.com:
+      peer0.reg.example.com:
         # [Optional]. will this peer be sent transaction proposals for endorsement? The peer must
         # have the chaincode installed. The app can also use this property to decide which peers
         # to send the chaincode install request. Default: true
@@ -66,31 +66,31 @@ channels:
         # Default: true
         eventSource: true
 
-      peer1.org1.example.com:
+      peer1.reg.example.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
 
-      peer0.org2.example.com:
+      peer0.sop.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
 
-      peer1.org2.example.com:
+      peer1.sop.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
 
-      peer0.org3.example.com:
+      peer0.usr.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
         eventSource: true
 
-      peer1.org3.example.com:
+      peer1.usr.com:
         endorsingPeer: true
         chaincodeQuery: true
         ledgerQuery: true
@@ -99,11 +99,11 @@ channels:
 # list of participating organizations in this network
 #
 organizations:
-  Org1:
-    mspid: Org1MSP
+  Reguladores:
+    mspid: ReguladoresMSP
     peers:
-      - peer0.org1.example.com
-      - peer1.org1.example.com
+      - peer0.reg.example.com
+      - peer1.reg.example.com
 
     # [Optional]. Certificate Authorities issue certificates for identification purposes in a Fabric based
     # network. Typically certificates provisioning is done in a separate process outside of the
@@ -111,23 +111,23 @@ organizations:
     # dynamic certificate management (enroll, revoke, re-enroll). The following section is only for
     # Fabric-CA servers.
     certificateAuthorities:
-      - ca-org1
+      - ca-reg
 
-  Org2:
-    mspid: Org2MSP
+  SoporteHC:
+    mspid: SoporteHCMSP
     peers:
-      - peer0.org2.example.com
-      - peer1.org2.example.com
+      - peer0.sop.com
+      - peer1.sop.com
     certificateAuthorities:
-      - ca-org2
+      - ca-sop
 
-  Org3:
-    mspid: Org3MSP
+  UsuarioHC:
+    mspid: UsuarioHCMSP
     peers:
-      - peer0.org3.example.com
-      - peer1.org3.example.com
+      - peer0.usr.com
+      - peer1.usr.com
     certificateAuthorities:
-      - ca-org3
+      - ca-usr
 #
 # List of orderers to send transaction and channel create/update requests to. For the time
 # being only one orderer is needed. If more than one is defined, which one get used by the
@@ -147,47 +147,47 @@ orderers:
 # and event listener registration.
 #
 peers:
-  peer0.org1.example.com:
+  peer0.reg.example.com:
     # this URL is used to send endorsement and query requests
     url: grpc://localhost:7051
 
     grpcOptions:
-      ssl-target-name-override: peer0.org1.example.com
+      ssl-target-name-override: peer0.reg.example.com
       request-timeout: 120001
 
-  peer1.org1.example.com:
+  peer1.reg.example.com:
     url: grpc://localhost:8051
 
     grpcOptions:
-      ssl-target-name-override: peer1.org1.example.com
+      ssl-target-name-override: peer1.reg.example.com
       request-timeout: 120001
 
-  peer0.org2.example.com:
+  peer0.sop.com:
     url: grpc://localhost:9051
 
     grpcOptions:
-      ssl-target-name-override: peer0.org2.example.com
+      ssl-target-name-override: peer0.sop.com
       request-timeout: 120001
 
-  peer1.org2.example.com:
+  peer1.sop.com:
     url: grpc://localhost:10051
 
     grpcOptions:
-      ssl-target-name-override: peer1.org2.example.com
+      ssl-target-name-override: peer1.sop.com
       request-timeout: 120001
 
-  peer0.org3.example.com:
+  peer0.usr.com:
     url: grpc://localhost:11051
 
     grpcOptions:
-      ssl-target-name-override: peer0.org3.example.com
+      ssl-target-name-override: peer0.usr.com
       request-timeout: 120001
 
-  peer1.org3.example.com:
+  peer1.usr.com:
     url: grpc://localhost:12051
 
     grpcOptions:
-      ssl-target-name-override: peer1.org3.example.com
+      ssl-target-name-override: peer1.usr.com
       request-timeout: 120001
 
 # Fabric-CA is a special kind of Certificate Authority provided by Hyperledger Fabric which allows
@@ -195,7 +195,7 @@ peers:
 # Certificate Authority instead of Fabric-CA, in which case this section would not be specified.
 #
 certificateAuthorities:
-  ca-org1:
+  ca-reg:
     url: http://localhost:7054
     # the properties specified under this object are passed to the 'http' client verbatim when
     # making the request to the Fabric-CA server
@@ -208,22 +208,22 @@ certificateAuthorities:
       - enrollId: admin
         enrollSecret: adminpw
     # [Optional] The optional name of the CA.
-    caName: ca-org1
+    caName: ca-reg
 
-  ca-org2:
+  ca-sop:
     url: http://localhost:8054
     httpOptions:
       verify: false
     registrar:
       - enrollId: admin
         enrollSecret: adminpw
-    caName: ca-org2
+    caName: ca-sop
 
-  ca-org3:
+  ca-usr:
     url: http://localhost:9054
     httpOptions:
       verify: false
     registrar:
       - enrollId: admin
         enrollSecret: adminpw
-    caName: ca-org3
+    caName: ca-usr
