@@ -80,7 +80,7 @@ let Chaincode = class {
     proyecto.nomP = nomP;
     proyecto.nomSol = nomSol;
     proyecto.tipoSol = tipoSol;
-    proyecto.estadoP = 'EN_REVISION';
+    proyecto.estadoP = 'VALIDA';
     proyecto.causa = causa;
     let cadena = {};
     let eslabonGenesis = {};
@@ -170,46 +170,6 @@ let Chaincode = class {
     await stub.deleteState(nomPnomSolIndexKey);
   }
 
-  // ===========================================================
-  // Valida un proyecto poniendo el estadoP = Valida
-  // ===========================================================
-  async validarProyecto(stub, args, thisClass) {
-    if (args.length != 1) {
-      throw new Error('Numero de argumentos incorrecto. Escribe el nombre del proyecto para eliminar');
-    }
-    let name = args[0];
-    if (!name) {
-      throw new Error('El nombre no puede ser vacio');
-    }
-
-    let nomP = args[0];
-    console.info('=======Comienza Validacion=========', nomP);
-
-    let proyectAsBytes = await stub.getState(nomP);
-    if (!proyectAsBytes || !proyectAsBytes.toString()) {
-      throw new Error('El proyecto no existe: ');
-    }
-    let proyectToValid = {};
-    try {
-      proyectToValid = JSON.parse(proyectAsBytes.toString()); //unmarshal
-    } catch (err) {
-      let jsonResp = {};
-      jsonResp.error = 'Failed to decode JSON of: ' + nomP;
-      throw new Error(jsonResp);
-    }
-    console.info(proyectToValid);
-    proyectToValid.estadoP = 'VALIDA';
-
-    let proyectJSONasBytes = Buffer.from(JSON.stringify(proyectToValid));
-    await stub.putState(nomP, proyectJSONasBytes); //rewrite the marble
-
-    console.info('========Validacion Exitosa===========');
-  }
-
-
-
-
-
 
 
 
@@ -280,7 +240,7 @@ let Chaincode = class {
       eslabon2.recaudacion = 0;
 
       eslabones.eslabon1 = eslabon1;
-      eslabones.eslabon2 = esladon2;
+      eslabones.eslabon2 = 2;
     }
     if(ne == 3){
       let eslabon1 = {};
@@ -298,8 +258,8 @@ let Chaincode = class {
 
 
       eslabones.eslabon1 = eslabon1;
-      eslabones.eslabon2 = esladon2;
-      eslabones.eslabon3 = esladon3;
+      eslabones.eslabon2 = 2;
+      eslabones.eslabon3 = 3;
     }
     if(ne == 4){
       let eslabon1 = {};
@@ -321,9 +281,9 @@ let Chaincode = class {
 
 
       eslabones.eslabon1 = eslabon1;
-      eslabones.eslabon2 = esladon2;
-      eslabones.eslabon3 = esladon3;
-      eslabones.eslabon4 = esladon4;
+      eslabones.eslabon2 = 2;
+      eslabones.eslabon3 = 3;
+      eslabones.eslabon4 = 4;
     }
     if(ne == 5){
       let eslabon1 = {};
@@ -349,10 +309,10 @@ let Chaincode = class {
 
 
       eslabones.eslabon1 = eslabon1;
-      eslabones.eslabon2 = esladon2;
-      eslabones.eslabon3 = esladon3;
-      eslabones.eslabon4 = esladon4;
-      eslabones.eslabon5 = esladon5;
+      eslabones.eslabon2 = 2;
+      eslabones.eslabon3 = 3;
+      eslabones.eslabon4 = 4;
+      eslabones.eslabon5 = 5;
     }
 
     cadenaAux.eslabones = eslabones;
@@ -400,7 +360,7 @@ let Chaincode = class {
 
     let numDonativos = proyectToDonate.cadena.eslabonGenesis.numDonativos + 1;
     proyectToDonate.cadena.eslabonGenesis.numDonativos = numDonativos;
-    proyectToDonate.cadena.eslabonGenesis.eslabones.eslabon1.recaudacion = proyectToDonate.cadena.eslabonGenesis.eslabones.eslabon1.recaudacion + cantidad
+    proyectToDonate.cadena.eslabones.eslabon1.recaudacion = proyectToDonate.cadena.eslabones.eslabon1.recaudacion + cantidad
     let donativosAux = {};
     donativosAux = proyectToDonate.cadena.eslabonGenesis.donativos;
 
@@ -422,6 +382,48 @@ let Chaincode = class {
     console.info('================Donativo realizado exitosamente=================');
   }
 
+
+
+
+
+
+
+
+  // ===========================================================
+  // Valida un proyecto poniendo el estadoP = Valida
+  // ===========================================================
+  // async validarProyecto(stub, args, thisClass) {
+  //   if (args.length != 1) {
+  //     throw new Error('Numero de argumentos incorrecto. Escribe el nombre del proyecto para validar');
+  //   }
+  //   let name = args[0];
+  //   if (!name) {
+  //     throw new Error('El nombre no puede ser vacio');
+  //   }
+  //
+  //   let nomP = args[0];
+  //   console.info('=======Comienza Validacion=========', nomP);
+  //
+  //   let proyectAsBytes = await stub.getState(nomP);
+  //   if (!proyectAsBytes || !proyectAsBytes.toString()) {
+  //     throw new Error('El proyecto no existe: ');
+  //   }
+  //   let proyectToValid = {};
+  //   try {
+  //     proyectToValid = JSON.parse(proyectAsBytes.toString()); //unmarshal
+  //   } catch (err) {
+  //     let jsonResp = {};
+  //     jsonResp.error = 'Failed to decode JSON of: ' + nomP;
+  //     throw new Error(jsonResp);
+  //   }
+  //   console.info(proyectToValid);
+  //   proyectToValid.estadoP = 'VALIDA';
+  //
+  //   let proyectJSONasBytes = Buffer.from(JSON.stringify(proyectToValid));
+  //   await stub.putState(nomP, proyectJSONasBytes); //rewrite the marble
+  //
+  //   console.info('========Validacion Exitosa===========');
+  // }
 
 
 

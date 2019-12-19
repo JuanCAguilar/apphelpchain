@@ -57,7 +57,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 	const request = {
 		chaincodeId: 'helpchain',
 		fcn: 'queryProyectsPorEstadoP',				//PARTE IMPORTANTE
-		args: ['EN_REVISION']
+		args: ['ACTIVA']
 	};
 
 	// send the query proposal to the peer
