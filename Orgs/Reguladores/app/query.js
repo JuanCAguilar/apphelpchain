@@ -56,7 +56,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 // 	getHistoryPorProyecto nomP
 
 	const request = {
-		chaincodeId: 'mycc',
+		chaincodeId: 'helpchain',
 		fcn: 'getHistoryPorProyecto',				//PARTE IMPORTANTE
 		args: ['proyecto1']
 	};

@@ -55,7 +55,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 //	queryProyectsPorEstadoCad 	estadoCad
 
 	const request = {
-		chaincodeId: 'mycc',
+		chaincodeId: 'helpchain',
 		fcn: 'buscarProyecto',				//PARTE IMPORTANTE
 		args: ['proyecto1']
 	};
