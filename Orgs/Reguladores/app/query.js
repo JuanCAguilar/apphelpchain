@@ -53,11 +53,12 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 //	queryProyectsPorNomSol		nomSol		--FALLO
 //	queryProyectsPorEstadoP		estadoP
 //	queryProyectsPorEstadoCad 	estadoCad
+// 	getHistoryPorProyecto nomP
 
 	const request = {
-		chaincodeId: 'helpchain',
-		fcn: 'queryProyectsPorEstadoP',				//PARTE IMPORTANTE
-		args: ['ACTIVA']
+		chaincodeId: 'mycc',
+		fcn: 'getHistoryPorProyecto',				//PARTE IMPORTANTE
+		args: ['proyecto1']
 	};
 
 	// send the query proposal to the peer

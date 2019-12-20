@@ -64,9 +64,9 @@ async function invoke() {
 
 		const proposal_request = {
 			targets: [peer], // notice the proposal_request has the peer defined in the 'targets' attribute
-			chaincodeId: 'helpchain',
+			chaincodeId: 'mycc',
 			fcn: 'crearProyecto',																																					//PARTE IMPORTANTE: FUNCION Y ARGUMENTOS POR DEFINIR
-			args: ['proyecto1', 'Individual', 'Esperanza', 'Educacion','100'],
+			args: ['proyecto1', 'Empresa', 'Amor', 'Educacion','1000'],
 			chainId: 'channelhelpchain',
 			txId: tx_id
 		};

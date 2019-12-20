@@ -493,14 +493,19 @@ let Chaincode = class {
 
     console.info('======== Empieza queryProyectsBasedOnNomSol ========== ', nomSol);
 
+    let queryString = {};
+    queryString.selector = {};
+    queryString.selector.docType = 'proyecto';
+    queryString.selector.estadoP = estadoP;
+    let method = thisClass['getQueryResultForQueryString'];
+    let queryResults = await method(stub, JSON.stringify(queryString), thisClass);
+    return queryResults; //shim.success(queryResults);
 
-    let nomSolProyectsResultsIterator = await stub.getStateByPartialCompositeKey('nomP~nomSol', [nomSol]);
 
-
-    let method = thisClass['getAllResults'];
-    let results = await method(nomSolProyectsResultsIterator, false);
-
-    return Buffer.from(JSON.stringify(results));
+    //let nomSolProyectsResultsIterator = await stub.getStateByPartialCompositeKey('nomP~nomSol', [nomSol]);
+    //let method = thisClass['getAllResults'];
+    //let results = await method(nomSolProyectsResultsIterator, false);
+    //return Buffer.from(JSON.stringify(results));
   }
 
   async queryProyectsPorEstadoP(stub, args, thisClass) {
