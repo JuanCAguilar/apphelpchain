@@ -1,35 +1,20 @@
 'use strict';
-/*
-* Copyright IBM Corp All Rights Reserved
-*
-* SPDX-License-Identifier: Apache-2.0
-*/
-/*
- * Chaincode query
- */
 
 var Fabric_Client = require('fabric-client');
 var fs = require('fs');
 var path = require('path');
-
-var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');             //Aqui tengo que cambiar dependiendo de la organizacion
+var redhelpchain_path = path.resolve('../..', '../..', 'redhelpchain');  
 var regtlscacert_path = path.resolve(redhelpchain_path, 'crypto-config', 'peerOrganizations', 'reg.com', 'tlsca', 'tlsca.reg.com-cert.pem');
 var regtlscacert = fs.readFileSync(regtlscacert_path, 'utf8');
-
-//
 var fabric_client = new Fabric_Client();
-
-
 var channel = fabric_client.newChannel('channelhelpchain');
 var peer = fabric_client.newPeer('grpcs://localhost:7051', {
-	'ssl-target-name-override': 'peer0.reg.com',		 //Aqui tengo que cambiar dependiendo de la organizacion
+	'ssl-target-name-override': 'peer0.reg.com',	
 	pem: regtlscacert
 });
 channel.addPeer(peer);
 var store_path = path.join(__dirname, 'hfc-key-store');
 console.log('Store path:'+store_path);
-
-
 Fabric_Client.newDefaultKeyValueStore({ path: store_path
 }).then((state_store) => {
 	fabric_client.setStateStore(state_store);
@@ -46,22 +31,12 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
 		throw new Error('run..	node registrarUsuario.js');
 	}
 
-
-//	buscarProyecto		nomP
-//	queryProyectsPorCausa		causa
-//	queryProyectsPorTipoSol 	tipoSol
-//	queryProyectsPorNomSol		nomSol		--FALLO
-//	queryProyectsPorEstadoP		estadoP
-//	queryProyectsPorEstadoCad 	estadoCad
-// 	getHistoryPorProyecto nomP
-
 	const request = {
 		chaincodeId: 'helpchain',
-		fcn: 'getHistoryPorProyecto',				//PARTE IMPORTANTE
+		fcn: 'getHistoryPorProyecto',		
 		args: ['proyecto1']
 	};
 
-	// send the query proposal to the peer
 	return channel.queryByChaincode(request);
 }).then((query_responses) => {
 	console.log("El Query ha sido realizado. Viendo resultados");

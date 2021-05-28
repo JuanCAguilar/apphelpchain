@@ -605,7 +605,13 @@ let Chaincode = class {
       }
       let nomP = args[0];
       console.info('================ start getHistoryPorProyecto: %s\n', nomP);
-
+/*
+      const ClientIdentity = require('fabric-shim').ClientIdentity;
+      let clientIdentity = new ClientIdentity(stub);
+      if (client.getMSPID() === 'reg') {
+        return;
+      }
+*/
       let resultsIterator = await stub.getHistoryForKey(nomP);
       let method = thisClass['getAllResults'];
       let results = await method(resultsIterator, true);
